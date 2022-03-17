@@ -1,21 +1,17 @@
 "use strict";
-const taskQueue = require('./library/taskQueue');
+const { createDefaultQueue } = require('./library/default-queue');
 
 global.MAX_REQUEST_RETRIES = Infinity;  // How many requests to attempt before giving up on the consumer.
 global.CONCURRENT_TASKS_PER_QUEUE = 10;
 
 global.qManager = [];
 
-// add initial queues
-const initialQueues = ['send email', 'send notif'];
-initialQueues.forEach((v, i) => {
-  qManager.push({ 
-    id: i, // queue id is the index
-    name: v,
-    consumers: [],
-    taskQueue: taskQueue()
-  });
-})
+const argument = process.argv.slice(2)[0];
+if (argument === 'with-default-queue') {
+  // create initial queues
+  createDefaultQueue();
+  console.log('default queue created');
+}
 
 var dotenv = require('dotenv');
 var logger = require('morgan');

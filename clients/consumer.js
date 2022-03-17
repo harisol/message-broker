@@ -1,12 +1,11 @@
+"use strict";
+
+const { defaultQueues } = require('../server/library/default-queue');
 
 /*
   Registers to ONE Queue.
 */
-var consumer = function(consumer_hook ){
-  "use strict";
-  const queueIdSendEmail = 0;
-  const queueIdSendNotif = 1;
-
+var consumer = function(consumer_hook) {
   var request = require('request');
   var http = require('http');
   var qs = require('querystring');
@@ -68,21 +67,28 @@ var consumer = function(consumer_hook ){
       callback_url:'http://localhost:'+address.port+'/notify'
     };
 
-    // subscribe to queue send email
-    request.post('http://localhost:3000/queues/'+queueIdSendEmail+'/consumers', { form: formPayload }, function (error, res, body) {
-      if ( error || (res.statusCode / 100 | 0) !== 2 ){ 
-        // error occured or status != 2XX
-        console.log('Failed URL request...');
-      }
-    });
-
-    // subscribe to queue send notif
-    request.post('http://localhost:3000/queues/'+queueIdSendNotif+'/consumers',{form:formPayload},function (error, res, body) {
-      if ( error || (res.statusCode / 100 | 0) !== 2 ){ 
-        // error occured or status != 2XX
-        console.log('Failed URL request...');
-      }
-    });
+    if (!module.parent) {
+      // subscribe to all available queue
+      defaultQueues.forEach(qm => {
+        request.post('http://localhost:3000/queues/'+qm.id+'/consumers', { form: formPayload }, function (error, res, body) {
+          if ( error || (res.statusCode / 100 | 0) !== 2 ){ 
+            // error occured or status != 2XX
+            console.log({x: error || res.statusCode});
+            console.log('Failed URL requestx...');
+          }
+        });
+      });
+    } else {
+      // for testing with mocha
+      // subscribe to queue with id 1
+      request.post('http://localhost:3000/queues/1/consumers', { form: formPayload }, function (error, res, body) {
+          if ( error || (res.statusCode / 100 | 0) !== 2 ){ 
+            // error occured or status != 2XX
+            console.log({x: error || res.statusCode});
+            console.log('Failed URL requestx...');
+          }
+        });
+    }
 
   });
 };
@@ -90,5 +96,6 @@ var consumer = function(consumer_hook ){
 if (!module.parent) {
     consumer();
 } else {
+    // for testing with mocha
     module.exports = consumer;
 }

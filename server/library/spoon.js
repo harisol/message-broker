@@ -9,14 +9,15 @@ var Spoon = (function () {
     join: function(match,callback,ms_timeout){
       var sym = Symbol();
 
-      if (typeof ms_timeout === 'number')
+      if (typeof ms_timeout === 'number'){
         var timeout = setTimeout(function(cb, sym){
           registry.delete(sym);
           cb('Warning: Spoon timed Out.',null);
-        },ms_timeout,callback,sym);
+        }, ms_timeout,callback, sym);
+      }
 
-        var payload = { match: match, callback: callback, timeout };
-        registry.set( sym , payload );
+      var payload = { match: match, callback: callback, timeout };
+      registry.set( sym , payload );
 
     },
     collect: function(data){

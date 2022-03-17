@@ -4,8 +4,8 @@
   "description": "Publish-Subscribe Message Broker.",
   "main": "broker.js",
   "scripts": {
-    "start": "node server/broker.js",
-    "broker": "node server/broker.js",
+    "start": "node server/broker.js with-default-queue",
+    "broker": "node server/broker.js with-default-queue",
     "consumer": "node clients/consumer.js",
     "producer": "node clients/producer.js",
     "bash-test": "bash tests/test.sh",

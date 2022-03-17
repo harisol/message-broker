@@ -173,7 +173,7 @@ describe("Producer Management",function(){
 
   it("should *NOT* post a message -- unmatched queue.",function(done){
     test
-    .post('/queues/0/messages')
+    .post('/queues/publish/0')
     .set('Content-Type', 'text/plain')
     .send('hello world #wo723mdsf')
     .end(function(err,res){
@@ -185,7 +185,7 @@ describe("Producer Management",function(){
 
   it("should *NOT* post a message -- invalid string queue_id.",function(done){
     test
-    .post('/queues/John/messages')
+    .post('/queues/publish/John')
     .set('Content-Type', 'text/plain')
     .send('hello world #wo723mdsf')
     .end(function(err,res){
@@ -207,7 +207,7 @@ describe("Producer Management",function(){
       broker.qManager[1].name.should.equal('PracticalQueue');
 
       // Setup hook for next text below....
-      var consumer = require('./../clients/consumer.js')( 1 ,function(msg){
+      require('./../clients/consumer.js')(function(msg) {
         spoon.collect(msg.content);
       });
       done();
@@ -219,10 +219,14 @@ describe("Producer Management",function(){
 
     // Spoon lets us neatly integrate with Consumer, so that if it receives our message, it can send us a callback.
     // Ironically, it's like a mini callback pub/sub system in itself.
-    spoon.join( data=>(/#irduj@Quo/.test(data.body)), err=>done(err), 2000);
+    spoon.join(
+      data => (/#irduj@Quo/.test(data.body)),
+      err => done(err),
+      2000
+    );
 
     test
-    .post('/queues/1/messages')
+    .post('/queues/publish/1')
     .set('Content-Type', 'text/plain')
     .send('hello world! #irduj@Quo')
     .end(function(err,res){
